@@ -39,14 +39,40 @@
 // }
 
 // app/_layout.tsx
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Drawer } from 'expo-router/drawer';
 import { useColorScheme } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { DefaultTheme, MD3DarkTheme, PaperProvider } from 'react-native-paper';
+// import tracker from 'react-native-tracking-sdk';
+import tracker from '../../react-native-tracking-sdk/src/index.js';
 
 export default function Layout() {
+  // console.log(tracker, '<<<<')
+
+  useEffect(() => {
+    // Initialize the tracking SDK
+    tracker.initialize('test-api-key', {
+      endpoint: 'http://localhost:3000/events',
+      debug: true
+    });
+    
+    // Setup AppState listener for background/foreground events
+    const subscription = AppState.addEventListener('change', nextAppState => {
+      if (nextAppState === 'active') {
+        tracker.onAppForeground();
+      } else if (nextAppState === 'background') {
+        tracker.onAppBackground();
+      }
+    });
+    
+    return () => {
+      subscription.remove();
+      tracker.endSession();
+    };
+  }, []);
+  
   const colorScheme = useColorScheme();
   const theme = colorScheme === 'dark' ? MD3DarkTheme : DefaultTheme;
 

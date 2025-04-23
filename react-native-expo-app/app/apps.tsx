@@ -2,12 +2,28 @@
 import React, { useState } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { Button, Snackbar, Text } from 'react-native-paper';
+// import tracker from 'react-native-tracking-sdk';
+import tracker from '../../react-native-tracking-sdk/src/index.js';
 
 export default function AppsScreen() {
   const [visible, setVisible] = useState(false);
 
-  const onToggleSnackBar = () => setVisible(!visible);
-  const onDismissSnackBar = () => setVisible(false);
+  // console.log(tracker, '<<<<')
+
+  const onToggleSnackBar = () => {
+    tracker.trackEvent('button_clicked', {
+      button_name: 'login_button',
+      screen: 'AppScreen'
+    });
+    setVisible(!visible);
+  } 
+  const onDismissSnackBar = () => {
+    tracker.trackEvent('button_clicked', {
+      button_name: 'login_button',
+      screen: 'AppScreen'
+    });
+    setVisible(false);
+  }
 
   return (
     <View style={styles.container}>
